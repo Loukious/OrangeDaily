@@ -50,7 +50,7 @@ def get_spin_result(btoken):
 
 
 while True:
-    token = os.getenv("TOKEN")
+    token = "Bearer " + os.getenv("TOKEN")
     result = get_spin_result(token)
     if result is None:  # Exit on max attempts error
         break

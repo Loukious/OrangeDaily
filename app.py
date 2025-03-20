@@ -2,11 +2,68 @@ import os
 import requests
 import time
 
+
+def get_click_to_win_token(btoken):
+    headers = {
+        "user-agent": "Dart/3.1 (dart:io)",
+        "content-type": "application/json",
+        "versionapp": "2024",
+        "x-lang-mobile": "en",
+        "x-tenantid": "tn",
+        "x-lang": "en",
+        "authorization": btoken
+    }
+    url = "https://krakend-bff.maxit.orange.tn/clicktowin/auth/token"
+    with requests.session() as s:
+        response = s.get(url, headers=headers)
+        if response.status_code == 200:
+            response = response.json()
+            if response["statusResponse"]["isSuccessful"]:
+                return response["authResponse"]["token"]
+    return None
+
+def get_msisdn(btoken):
+    headers = {
+        "user-agent": "Dart/3.1 (dart:io)",
+        "content-type": "application/json",
+        "versionapp": "2024",
+        "x-lang-mobile": "en",
+        "x-tenantid": "tn",
+        "x-lang": "en",
+        "authorization": btoken
+    }
+    url = "https://krakend-bff.maxit.orange.tn/clicktowin/reward/successive"
+    with requests.session() as s:
+        response = s.get(url, headers=headers).json()
+        return response["successiveDaysResponse"]["msisdn"]
+
+def get_click_to_win_gift(btoken):
+    headers = {
+        "user-agent": "Dart/3.1 (dart:io)",
+        "content-type": "application/json",
+        "versionapp": "2024",
+        "x-lang-mobile": "en",
+        "x-tenantid": "tn",
+        "x-lang": "en",
+        "authorization": btoken
+    }
+    token = get_click_to_win_token(btoken)
+    if token:
+        url = "https://krakend-bff.maxit.orange.tn/clicktowin/reward/consume"
+        data = {
+            "msisdn": get_msisdn(btoken),
+            "token": token
+        }
+        with requests.session() as s:
+            response = s.post(url, headers=headers, json=data).json()
+            print("Claimed gift: ", response["rewardResponse"]["gift"])
+
+
 def get_spin_result(btoken):
     headers = {
         "user-agent": "Dart/3.1 (dart:io)",
         "content-type": "application/json",
-        "versionapp": "2008",
+        "versionapp": "2024",
         "x-lang-mobile": "en",
         "x-tenantid": "tn",
         "x-lang": "en",
@@ -58,3 +115,5 @@ while True:
         print("Gift claimed successfully!")
         break
     time.sleep(5)
+
+get_click_to_win_gift(token)

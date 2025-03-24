@@ -20,6 +20,8 @@ def get_click_to_win_token(btoken):
             response = response.json()
             if response["statusResponse"]["isSuccessful"]:
                 return response["authResponse"]["token"]
+        else:
+            print(response.text)
     return None
 
 def get_msisdn(btoken):

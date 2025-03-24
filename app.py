@@ -78,7 +78,10 @@ def get_spin_result(btoken):
 
     # Handle max attempts error
     if "code" in result and result["code"] == "5000":
-        print(result["message"])
+        if "message" in result:
+            print(result["message"])
+        else:
+            print(result)
         return None
 
     token = result["token"]

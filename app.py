@@ -72,17 +72,22 @@ def get_spin_result(btoken):
         "authorization": btoken
     }
     base_url = "https://krakend-bff.maxit.orange.tn/luckwheel"
-    with requests.session() as s:
-        response = s.post(f"{base_url}/params", headers=headers, json={})
-        result = response.json()
+    done = False
+    while not done:
+        with requests.session() as s:
+            response = s.post(f"{base_url}/params", headers=headers, json={})
+            result = response.json()
 
-    # Handle max attempts error
-    if "code" in result and result["code"] == "5000":
-        if "message" in result:
-            print(result["message"])
+        # Handle max attempts error
+        if "code" in result and result["code"] == "5000":
+            if "message" in result:
+                print(result["message"])
+                return None
+            else:
+                print(result)
         else:
-            print(result)
-        return None
+            done = True
+            
 
     token = result["token"]
     rewards = result["segmentValuesArray"]
